@@ -1,0 +1,5 @@
+flight_date,distance_category,avg_arrival_delay,avg_departure_delay
+2021-04-29,6,-6.82,3.55
+2021-04-27,6,-3.29,-0.33
+2021-04-28,6,-5.42,3.96
+2021-04-26,6,5.14,11.48
