@@ -1,24 +1,30 @@
-PROJECT_ID = "blank-space-315611" # your project id
-BUCKET_NAME = "spark-week3" # your bucket name
-DATASET_ID = "week3" # your dataset id
-
-from datetime import date
-from pyspark.sql import SparkSession, functions as f
-from pyspark.sql.functions import lit, date_add
 from pyspark.sql.types import DateType
-import time
+from pyspark.sql.functions import date_add
+from pyspark.sql import SparkSession
+from datetime import date
+
+PROJECT_ID = "blank-space-315611"  # your project id
+BUCKET_NAME = "spark-week3"  # your bucket name
+DATASET_ID = "week3"  # your dataset id
+
 
 # create spark session
 spark = SparkSession.builder.getOrCreate()
 
 # extract data to spark dataframe
-flight_data = spark.read.format("json").load(f"gs://{BUCKET_NAME}/data/*.json")
+flight_data = spark.read.format("json") \
+    .load(f"gs://{BUCKET_NAME}/data/*.json")
 flight_data.printSchema()
 flight_data.show()
 
 # transform flight_date to date type
-flight_data = flight_data.withColumn("flight_date", flight_data.flight_date.cast(DateType()))
-flight_data = flight_data.withColumn("flight_date", date_add(flight_data.flight_date, 723))
+flight_data = flight_data.withColumn(
+    "flight_date",
+    flight_data.flight_date.cast(
+        DateType()))
+flight_data = flight_data.withColumn(
+    "flight_date", date_add(
+        flight_data.flight_date, 723))
 flight_data.printSchema()
 flight_data.show()
 
@@ -114,18 +120,18 @@ dest_airport_count.coalesce(1).write.format("json") \
 # transformation to add temp table of distance category
 flights_data = spark.sql(
     """
-    select 
+    select
         *,
-        case 
-            when distance between 0 and 500 then 1 
+        case
+            when distance between 0 and 500 then 1
             when distance between 501 and 1000 then 2
             when distance between 1001 and 2000 then 3
-            when distance between 2001 and 3000 then 4 
-            when distance between 3001 and 4000 then 5 
-            when distance between 4001 and 5000 then 6 
-        END distance_category 
-    from 
-        flights_data 
+            when distance between 2001 and 3000 then 4
+            when distance between 3001 and 4000 then 5
+            when distance between 4001 and 5000 then 6
+        END distance_category
+    from
+        flights_data
     """
 )
 flights_data.registerTempTable("flights_data")
